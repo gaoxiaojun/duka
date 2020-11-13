@@ -27,9 +27,8 @@ jobs:
         with:
           push: true
           tags: user/app:latest
-          build-args: |
-            arg1=value1
-            arg2=value2
+          secrets: |
+            GIT_AUTH_TOKEN=${{ secrets.MYTOKEN }}
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
