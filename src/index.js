@@ -40,6 +40,7 @@ const fetch = async (instrumentIDs, fromDate, toDate, timeframe) => {
             to: toDateFormatted,
           },
           timeframe,
+          batchSize:5,
         })
 
         if (data.length) {
