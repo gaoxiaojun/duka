@@ -1,10 +1,10 @@
 FROM node:14
 
-WORKDIR /src/duka
+WORKDIR /usr/src/duka
 
-COPY package*.json /src
+COPY package*.json ./
 
-RUN cd /src && npm install
+RUN npm install
 
 COPY . .
 
