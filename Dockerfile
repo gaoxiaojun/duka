@@ -4,7 +4,7 @@ WORKDIR /src/duka
 
 COPY package*.json /src
 
-RUN cd src && npm install
+RUN cd /src && npm install
 
 COPY . .
 
