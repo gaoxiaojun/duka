@@ -4,7 +4,7 @@ A wrapper project around the [dukascopy-node](https://www.npmjs.com/package/duka
 
 ![Demo](/images/demo.png)
 
-## Installing
+## 安装
 
 ```
 git clone https://github.com/theninthsky/historical-market-data.git
