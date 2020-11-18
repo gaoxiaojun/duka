@@ -9,6 +9,10 @@ import instruments from './instruments.js'
 const { getHistoricRates } = dukascopyNode
 const { instrumentIDs, fromDate = '1900-01-01', toDate = new Date(), timeframe } = parameters
 
+const logger = createWriteStream('log.txt', {
+  flags: 'a' // 'a' means appending (old data will be preserved)
+})
+
 const fetch = async (instrumentIDs, fromDate, toDate, timeframe) => {
   console.log('Downloading...\n')
 
@@ -54,9 +58,10 @@ const fetch = async (instrumentIDs, fromDate, toDate, timeframe) => {
         }
       } catch (err) {
         console.error(`Error: ${fromDateFormatted} ${err}`)
+        logger.write(instrumentID + ',' + fromDateFormatted)
       }
     }
   }
 }
 
-fetch(instrumentIDs, new Date(fromDate), new Date(toDate), timeframe)
+fetch(instrumentIDs, new Date(fromDate), new Date(toDate), timeframe).finally(()=>logger.end())
