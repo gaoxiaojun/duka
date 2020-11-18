@@ -58,7 +58,7 @@ const fetch = async (instrumentIDs, fromDate, toDate, timeframe) => {
         }
       } catch (err) {
         console.error(`Error: ${fromDateFormatted} ${err}`)
-        logger.write(instrumentID + ',' + fromDateFormatted)
+        logger.write(instrumentID + ',' + fromDateFormatted+ '\n')
       }
     }
   }
