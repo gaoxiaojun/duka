@@ -13,7 +13,7 @@ const logger = createWriteStream('log.txt', {
   flags: 'a' // 'a' means appending (old data will be preserved)
 })
 
-const fetchInstrument = async (instrument, fromDate, toDate, timeframe, batchSize) => {
+const fetchInstrument = async (instrument, fromDate, toDate, timeframes, batchSize) => {
 const {minStartDate } = instruments[instrument]
     const startDate = new Date(minStartDate)
 
