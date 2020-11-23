@@ -13,19 +13,19 @@ const logger = createWriteStream('log.txt', {
   flags: 'a' // 'a' means appending (old data will be preserved)
 })
 
-const fetchInstrument = async (instrument, from, to, tif, batchSize) => {
+const fetchInstrument = async (instrument, fromDate, toDate, timeframe, batchSize) => {
 const {minStartDate } = instruments[instrument]
     const startDate = new Date(minStartDate)
 
     startDate.setDate(startDate.getDate() + 1) // actual start day is the day after minStartDay
 
-    const date = fromDate > startDate ? new Date(from) : startDate
+    const date = fromDate > startDate ? new Date(fromDate) : startDate
     const symbol = instrument.toUpperCase()
     const folderPath = `data/${symbol}`
 
     if (!existsSync(folderPath)) mkdirSync(folderPath, { recursive: true })
 
-    while (date <= to) {
+    while (date <= toDate) {
       const fromDateFormatted = date.toISOString().slice(0, 10)
 
       date.setDate(date.getDate() + 1)
@@ -34,12 +34,12 @@ const {minStartDate } = instruments[instrument]
 
       try {
         const data = await getHistoricRates({
-          instrument: instrumentID,
+          instrument,
           dates: {
             from: fromDateFormatted,
             to: toDateFormatted,
           },
-          timeframe: tif,
+          timeframes,
           batchSize,
         })
 
