@@ -34,7 +34,7 @@ const {minStartDate } = instruments[instrument]
 
       try {
         const data = await getHistoricRates({
-          instrument: instrumentID,
+          instrument,
           dates: {
             from: fromDateFormatted,
             to: toDateFormatted,
@@ -54,7 +54,7 @@ const {minStartDate } = instruments[instrument]
         }
       } catch (err) {
         console.error(`Error: ${fromDateFormatted} ${err}`)
-        logger.write(instrumentID + ',' + fromDateFormatted+ '\n')
+        logger.write(instrument + ',' + fromDateFormatted+ '\n')
       }
     }
 }
