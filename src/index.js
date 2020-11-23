@@ -50,7 +50,7 @@ const {minStartDate } = instruments[instrument]
             console.log(`[${symbol}] ${fromDateFormatted} ✔`),
           )
         } else {
-          console.log(`[${symbol}] ${companyName} ${fromDateFormatted} ❌ (no data)`)
+          console.log(`[${symbol}] ${fromDateFormatted} ❌ (no data)`)
         }
       } catch (err) {
         console.error(`Error: ${fromDateFormatted} ${err}`)
