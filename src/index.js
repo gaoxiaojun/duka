@@ -13,23 +13,19 @@ const logger = createWriteStream('log.txt', {
   flags: 'a' // 'a' means appending (old data will be preserved)
 })
 
-const fetch = async (instrumentIDs, fromDate, toDate, timeframe) => {
-  console.log('Downloading...\n')
-
-  for (const instrumentID of instrumentIDs) {
-    const { name, description, minStartDate } = instruments[instrumentID]
+const fetchInstrument = async (instrument, from, to, tif, batchSize) => {
+const {minStartDate } = instruments[instrument]
     const startDate = new Date(minStartDate)
 
     startDate.setDate(startDate.getDate() + 1) // actual start day is the day after minStartDay
 
-    const date = fromDate > startDate ? new Date(fromDate) : startDate
-    const [symbol] = name.match(/(.+?(?=\.))/) || [name.replace('/', '-')]
-    const companyName = description.toTitleCase()
-    const folderPath = `data/[${symbol}] ${companyName}`
+    const date = fromDate > startDate ? new Date(from) : startDate
+    const symbol = instrument.toUpperCase()
+    const folderPath = `data/${symbol}`
 
     if (!existsSync(folderPath)) mkdirSync(folderPath, { recursive: true })
 
-    while (date <= toDate) {
+    while (date <= to) {
       const fromDateFormatted = date.toISOString().slice(0, 10)
 
       date.setDate(date.getDate() + 1)
@@ -43,8 +39,8 @@ const fetch = async (instrumentIDs, fromDate, toDate, timeframe) => {
             from: fromDateFormatted,
             to: toDateFormatted,
           },
-          timeframe,
-          batchSize:5,
+          timeframe: tif,
+          batchSize,
         })
 
         if (data.length) {
@@ -61,6 +57,13 @@ const fetch = async (instrumentIDs, fromDate, toDate, timeframe) => {
         logger.write(instrumentID + ',' + fromDateFormatted+ '\n')
       }
     }
+}
+
+const fetch = async (instrumentIDs, fromDate, toDate, timeframe) => {
+  console.log('Downloading...\n')
+
+  for (const instrumentID of instrumentIDs) {
+    fetchInstrument(instrumentID, fromDate, toDate, timeframe, 10)
   }
 }
 
