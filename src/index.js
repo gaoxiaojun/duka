@@ -47,7 +47,7 @@ const {minStartDate } = instruments[instrument]
           const filePath = `${folderPath}/${fromDateFormatted}.csv`
 
           writeFile(filePath, data.map(row => row.join()).join('\n')).then(() =>
-            console.log(`[${symbol}] ${companyName} ${fromDateFormatted} ✔`),
+            console.log(`[${symbol}] ${fromDateFormatted} ✔`),
           )
         } else {
           console.log(`[${symbol}] ${companyName} ${fromDateFormatted} ❌ (no data)`)
