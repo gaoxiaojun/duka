@@ -54,7 +54,7 @@ const {minStartDate } = instruments[instrument]
         }
       } catch (err) {
         console.error(`Error: ${fromDateFormatted} ${err}`)
-        logger.write(instrumentID + ',' + fromDateFormatted+ '\n')
+        logger.write(instrument + ',' + fromDateFormatted+ '\n')
       }
     }
 }
