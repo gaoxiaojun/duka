@@ -63,7 +63,7 @@ const fetch = async (instrumentIDs, fromDate, toDate, timeframe) => {
   console.log('Downloading...\n')
 
   for (const instrumentID of instrumentIDs) {
-    fetchInstrument(instrumentID, fromDate, toDate, timeframe, 10)
+    await fetchInstrument(instrumentID, fromDate, toDate, timeframe, 10)
   }
 }
 
