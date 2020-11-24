@@ -2,7 +2,6 @@ import { existsSync, mkdirSync, createWriteStream } from 'fs'
 import { writeFile } from 'fs/promises'
 import dukascopyNode from 'dukascopy-node'
 
-import './patch.js'
 import parameters from './config/parameters.js'
 import instruments from './instruments.js'
 
@@ -13,14 +12,17 @@ const logger = createWriteStream('log.txt', {
   flags: 'a' // 'a' means appending (old data will be preserved)
 })
 
-const fetchInstrument = async (instrument, fromDate, toDate, timeframes, batchSize) => {
-const {minStartDate } = instruments[instrument]
+const fetch = async (instrumentIDs, fromDate, toDate, timeframe) => {
+  console.log('Downloading...\n')
+
+  for (const instrumentID of instrumentIDs) {
+    const { minStartDate } = instruments[instrumentID]
     const startDate = new Date(minStartDate)
 
     startDate.setDate(startDate.getDate() + 1) // actual start day is the day after minStartDay
 
     const date = fromDate > startDate ? new Date(fromDate) : startDate
-    const symbol = instrument.toUpperCase()
+    const symbol = instrumentID.toUpperCase()
     const folderPath = `data/${symbol}`
 
     if (!existsSync(folderPath)) mkdirSync(folderPath, { recursive: true })
@@ -34,36 +36,29 @@ const {minStartDate } = instruments[instrument]
 
       try {
         const data = await getHistoricRates({
-          instrument,
+          instrument: instrumentID,
           dates: {
             from: fromDateFormatted,
             to: toDateFormatted,
           },
-          timeframes,
-          batchSize,
+          timeframe,
+          batchSize:10,
         })
 
         if (data.length) {
           const filePath = `${folderPath}/${fromDateFormatted}.csv`
 
           writeFile(filePath, data.map(row => row.join()).join('\n')).then(() =>
-            console.log(`[${symbol}] ${fromDateFormatted} ✔`),
+            console.log(`${symbol} ${fromDateFormatted} ✔`),
           )
         } else {
-          console.log(`[${symbol}] ${fromDateFormatted} ❌ (no data)`)
+          console.log(`${symbol} ${fromDateFormatted} ❌ (no data)`)
         }
       } catch (err) {
         console.error(`Error: ${fromDateFormatted} ${err}`)
-        logger.write(instrument + ',' + fromDateFormatted+ '\n')
+        logger.write(instrumentID + ',' + fromDateFormatted+ '\n')
       }
     }
-}
-
-const fetch = async (instrumentIDs, fromDate, toDate, timeframe) => {
-  console.log('Downloading...\n')
-
-  for (const instrumentID of instrumentIDs) {
-    await fetchInstrument(instrumentID, fromDate, toDate, timeframe, 10)
   }
 }
 
