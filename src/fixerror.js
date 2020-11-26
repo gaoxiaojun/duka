@@ -9,10 +9,6 @@ import csvParser  from 'csv-parser'
 
 const { getHistoricRates } = dukascopyNode
 
-const logger = createWriteStream('log2.txt', {
-  flags: 'a' // 'a' means appending (old data will be preserved)
-})
-
 const fetch = async (instrumentIDs, fromDate, toDate, recover_logger:WriteStream) => {
   console.log('Downloading...\n')
 
@@ -82,7 +78,7 @@ const { instrumentIDs, fromDate = '1900-01-01', toDate = new Date(), timeframe }
 //fetch(instrumentIDs, new Date(fromDate), new Date(toDate), timeframe).finally(()=>logger.end())
 
 */
-const recovery_logger = createWriteStream('recover_log.txt', {
+const recover_logger = createWriteStream('recover_log.txt', {
     flags: 'a' // 'a' means appending (old data will be preserved)
 })
 const csv = createReadStream('log.txt')
@@ -90,7 +86,7 @@ csv
   .pipe(csvParser({headers: false}))
   .on('data', (row) => {
     console.log(row[0], row[1]);
-    fetch([row[0]], new Date(row[1]), new Date(row[1]), 'tick').then(()=> console.log(row[0],row[1], 'downloaded'))
+    fetch([row[0]], new Date(row[1]), new Date(row[1]), recover_logger).then(()=> console.log(row[0],row[1], 'downloaded'))
   })
   .on('error', (e) => {
     console.log(e)
