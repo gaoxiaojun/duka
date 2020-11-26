@@ -1,16 +1,15 @@
-import { existsSync, mkdirSync, createWriteStream } from 'fs'
+import { existsSync, mkdirSync, createWriteStream, createReadStream } from 'fs'
 import { writeFile } from 'fs/promises'
 import dukascopyNode from 'dukascopy-node'
 
-import parameters from './config/parameters.js'
 import instruments from './instruments.js'
 
-import {program} from 'commander'
-import { exit } from 'process'
+import csvParser  from 'csv-parser'
+
 
 const { getHistoricRates } = dukascopyNode
 
-const logger = createWriteStream('log1.txt', {
+const logger = createWriteStream('log2.txt', {
   flags: 'a' // 'a' means appending (old data will be preserved)
 })
 
@@ -30,6 +29,7 @@ const fetch = async (instrumentIDs, fromDate, toDate, timeframe) => {
     if (!existsSync(folderPath)) mkdirSync(folderPath, { recursive: true })
 
     while (date <= toDate) {
+        
       const fromDateFormatted = date.toISOString().slice(0, 10)
 
       date.setDate(date.getDate() + 1)
@@ -66,19 +66,7 @@ const fetch = async (instrumentIDs, fromDate, toDate, timeframe) => {
 
 //
 
-program.version('0.0.1');
-
-program
- .option('-s, --symbol <symbol>', 'symbol')
- .option('-f, --from <date>', 'from date')
- .option('-e, --end <date>', 'to date')
- .option('-t, --tif <timeframe>', 'timeframe', 'tick')
-
-program.parse(process.argv);
-
-if (program.symbol === undefined || program.from === undefined) exit(1)
-
-const download_parameters =
+/*const download_parameters =
 {
   instrumentIDs: [
     program.symbol.toLowerCase()
@@ -91,4 +79,21 @@ const download_parameters =
 console.log(download_parameters)
 const { instrumentIDs, fromDate = '1900-01-01', toDate = new Date(), timeframe } = download_parameters
 
-fetch(instrumentIDs, new Date(fromDate), new Date(toDate), timeframe).finally(()=>logger.end())
+//fetch(instrumentIDs, new Date(fromDate), new Date(toDate), timeframe).finally(()=>logger.end())
+
+*/
+
+const csv = createReadStream('log.txt')
+csv
+  .pipe(csvParser({headers: false}))
+  .on('data', (row) => {
+    console.log(row[0], row[1]);
+    fetch([row[0]], new Date(row[1]), new Date(row[1]), 'tick').then(()=> console.log(row[0],row[1], 'downloaded'))
+  })
+  .on('error', (e) => {
+    console.log(e)
+  })
+  .on('end', () => {
+    console.log('CSV file successfully processed');
+    logger.end()
+  });
