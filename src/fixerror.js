@@ -13,7 +13,7 @@ const logger = createWriteStream('log2.txt', {
   flags: 'a' // 'a' means appending (old data will be preserved)
 })
 
-const fetch = async (instrumentIDs, fromDate, toDate, timeframe) => {
+const fetch = async (instrumentIDs, fromDate, toDate, recover_logger:WriteStream) => {
   console.log('Downloading...\n')
 
   for (const instrumentID of instrumentIDs) {
@@ -43,7 +43,7 @@ const fetch = async (instrumentIDs, fromDate, toDate, timeframe) => {
             from: fromDateFormatted,
             to: toDateFormatted,
           },
-          timeframe,
+          timeframe: 'tick',
           batchSize:10,
         })
 
@@ -58,7 +58,7 @@ const fetch = async (instrumentIDs, fromDate, toDate, timeframe) => {
         }
       } catch (err) {
         console.error(`Error: ${fromDateFormatted} ${err}`)
-        logger.write(instrumentID + ',' + fromDateFormatted+ '\n')
+        recover_logger.write(instrumentID + ',' + fromDateFormatted+ '\n')
       }
     }
   }
@@ -82,7 +82,9 @@ const { instrumentIDs, fromDate = '1900-01-01', toDate = new Date(), timeframe }
 //fetch(instrumentIDs, new Date(fromDate), new Date(toDate), timeframe).finally(()=>logger.end())
 
 */
-
+const recovery_logger = createWriteStream('recover_log.txt', {
+    flags: 'a' // 'a' means appending (old data will be preserved)
+})
 const csv = createReadStream('log.txt')
 csv
   .pipe(csvParser({headers: false}))
@@ -96,4 +98,5 @@ csv
   .on('end', () => {
     console.log('CSV file successfully processed');
     logger.end()
+    recovery_logger.end()
   });
