@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, createWriteStream, createReadStream } from 'fs'
+import { existsSync, mkdirSync, createWriteStream, createReadStream,WriteStream} from 'fs'
 import { writeFile } from 'fs/promises'
 import dukascopyNode from 'dukascopy-node'
 
